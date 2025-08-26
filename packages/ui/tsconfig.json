@@ -1,0 +1,9 @@
+{
+  "extends": "@moneymap/config/react-lib.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src", "stories"],
+  "exclude": ["node_modules", "dist", "storybook-static"]
+}

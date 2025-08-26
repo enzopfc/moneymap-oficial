@@ -1,0 +1,28 @@
+{
+  "name": "@moneymap/types",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@moneymap/eslint-config": "workspace:*",
+    "@moneymap/config": "workspace:*",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.2"
+  }
+}

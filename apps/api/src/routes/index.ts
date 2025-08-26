@@ -1,6 +1,10 @@
 import type { FastifyInstance } from 'fastify';
+import healthRoutes from './health';
 
 export async function setupRoutes(fastify: FastifyInstance) {
+  // Register health routes first (no prefix)
+  await fastify.register(healthRoutes);
+  
   // Register API routes
   await fastify.register(async function(fastify) {
     // API v1 prefix

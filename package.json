@@ -16,7 +16,14 @@
     "db:push": "turbo run db:push",
     "db:migrate": "turbo run db:migrate",
     "db:seed": "turbo run db:seed",
-    "storybook": "turbo run storybook"
+    "storybook": "turbo run storybook",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "docker:clean": "docker-compose -f docker-compose.dev.yml down -v",
+    "setup:dev": "pnpm install && pnpm docker:up && sleep 5 && pnpm db:push && pnpm db:seed",
+    "health": "curl http://localhost:3333/health || echo 'API not reachable'",
+    "install:clean": "pnpm store prune && rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules && pnpm install"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

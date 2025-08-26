@@ -1,262 +1,360 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { DashboardLayout } from '../../../components/dashboard-layout';
+import { Button } from '../../../components/ui/button';
+import { Card } from '../../../components/ui/card';
+import { Input } from '../../../components/ui/input';
+import { 
+  mockTransactions, 
+  mockAccounts, 
+  mockCategories,
+  getCategoryById,
+  getAccountById,
+  mockUser
+} from '../../../lib/mock-data';
 
 export default function TransactionsPage() {
+  const [transactions] = useState(mockTransactions);
+  const [filterType, setFilterType] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Filter transactions
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesType = filterType === 'all' || transaction.type === filterType;
+    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !selectedCategory || transaction.categoryId === selectedCategory;
+    const matchesAccount = !selectedAccount || transaction.accountId === selectedAccount;
+    
+    return matchesType && matchesSearch && matchesCategory && matchesAccount;
+  });
+
+  const handleAddTransaction = () => {
+    setIsModalOpen(true);
+  };
+
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <Button variant="outline" size="sm">
+        📁 Importar Extrato
+      </Button>
+      <Button onClick={handleAddTransaction}>
+        + Nova Transação
+      </Button>
+    </div>
+  );
+
+  const transactionColumns = [
+    'Data',
+    'Descrição', 
+    'Conta',
+    'Valor',
+    'Tipo'
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">MoneyMapp</h1>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">Dashboard</Link>
-              <Link href="/dashboard/transactions" className="text-blue-600 font-medium">Transações</Link>
-              <Link href="/dashboard/budget" className="text-gray-500 hover:text-gray-700">Orçamento</Link>
-              <Link href="/dashboard/reports" className="text-gray-500 hover:text-gray-700">Relatórios</Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Olá, João</span>
-              <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">Sair</Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="flex justify-between items-center mb-8">
+    <DashboardLayout
+      title="Transações" 
+      description="Gerencie suas receitas e despesas"
+      headerActions={headerActions}
+      showBackButton
+    >
+      {/* Filters */}
+      <Card className="p-6 mb-8">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Transações</h2>
-            <p className="text-gray-600">Gerencie suas receitas e despesas</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+            <Input
+              placeholder="Buscar transação..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <div className="flex space-x-3">
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium">
-              + Nova Transação
-            </button>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">
-              Importar Extrato
-            </button>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+            >
+              <option value="all">Todos</option>
+              <option value="income">Receitas</option>
+              <option value="expense">Despesas</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {mockCategories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.icon} {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Conta</label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={selectedAccount}
+              onChange={(e) => setSelectedAccount(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {mockAccounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name} - {account.bank}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+        
+        <div className="mt-4 flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Mostrando {filteredTransactions.length} de {transactions.length} transações
+          </p>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              setSearchTerm('');
+              setFilterType('all');
+              setSelectedCategory('');
+              setSelectedAccount('');
+            }}
+          >
+            Limpar Filtros
+          </Button>
+        </div>
+      </Card>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-                <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>Este mês</option>
-                  <option>Últimos 3 meses</option>
-                  <option>Últimos 6 meses</option>
-                  <option>Este ano</option>
-                  <option>Personalizado</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
-                <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>Todas</option>
-                  <option>Alimentação</option>
-                  <option>Transporte</option>
-                  <option>Lazer</option>
-                  <option>Saúde</option>
-                  <option>Educação</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-                <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>Todos</option>
-                  <option>Receitas</option>
-                  <option>Despesas</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Conta</label>
-                <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>Todas</option>
-                  <option>Conta Corrente</option>
-                  <option>Poupança</option>
-                  <option>Cartão de Crédito</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <button className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 font-medium">
-                  Filtrar
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="p-6 bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm">Total Receitas</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(
+                  filteredTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0)
+                )}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">📈</div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm">Total Despesas</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(
+                  filteredTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0)
+                )}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">📉</div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm">Saldo Líquido</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(
+                  filteredTransactions.reduce((sum, t) => 
+                    t.type === 'income' ? sum + t.amount : sum - t.amount, 0
+                  )
+                )}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">💰</div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Transactions Table */}
+      {filteredTransactions.length === 0 ? (
+        <Card className="p-12 text-center">
+          <div className="text-6xl mb-4">📝</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma transação encontrada</h3>
+          <p className="text-gray-500 mb-6">Não encontramos transações com os filtros aplicados.</p>
+          <Button onClick={handleAddTransaction}>
+            + Adicionar Transação
+          </Button>
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {transactionColumns.map((column) => (
+                    <th key={column} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTransactions.map((transaction) => {
+                  const category = getCategoryById(transaction.categoryId);
+                  const account = getAccountById(transaction.accountId);
+                  
+                  return (
+                    <tr key={transaction.id} className="hover:bg-gray-50 cursor-pointer">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(transaction.date).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-3">
+                          <div className="text-xl">{category?.icon || '💰'}</div>
+                          <div>
+                            <p className="font-medium text-gray-900">{transaction.description}</p>
+                            <p className="text-sm text-gray-500">{category?.name}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {account?.name || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`font-semibold ${
+                          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {transaction.type === 'income' ? '+' : ''}
+                          {new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                          }).format(transaction.amount)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                          transaction.type === 'income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* Add Transaction Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity">
+              <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setIsModalOpen(false)}></div>
+            </div>
+            
+            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Nova Transação</h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Receitas</p>
-                <p className="text-2xl font-bold text-green-600">R$ 8.500,00</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-xl">↗</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Despesas</p>
-                <p className="text-2xl font-bold text-red-600">R$ 6.200,00</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <span className="text-red-600 text-xl">↙</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Saldo Líquido</p>
-                <p className="text-2xl font-bold text-blue-600">R$ 2.300,00</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 text-xl">$</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Transactions Table */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900">Lista de Transações</h3>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">Mostrando 1-10 de 247 transações</span>
-                <div className="flex space-x-1">
-                  <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">←</button>
-                  <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded">1</button>
-                  <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">2</button>
-                  <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">3</button>
-                  <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">→</button>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="income">Receita</option>
+                    <option value="expense">Despesa</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
+                  <Input placeholder="Ex: Salário, Supermercado..." />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Valor</label>
+                  <Input type="number" placeholder="0,00" />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {mockCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Conta</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {mockAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name} - {account.bank}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Data</label>
+                  <Input type="date" />
+                </div>
+                
+                <div className="flex justify-end space-x-3 pt-4">
+                  <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={() => {
+                    setIsModalOpen(false);
+                    alert('Funcionalidade em desenvolvimento!');
+                  }}>
+                    Salvar Transação
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conta</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">15/12/2024</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-xl mr-3">🍔</span>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">Restaurante ABC</div>
-                        <div className="text-sm text-gray-500">Almoço executivo</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                      Alimentação
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Cartão de Crédito</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-red-600">-R$ 45,90</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-800 mr-3">Editar</button>
-                    <button className="text-red-600 hover:text-red-800">Excluir</button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">14/12/2024</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-xl mr-3">⛽</span>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">Posto Shell</div>
-                        <div className="text-sm text-gray-500">Abastecimento</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Transporte
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Conta Corrente</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-red-600">-R$ 120,00</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-800 mr-3">Editar</button>
-                    <button className="text-red-600 hover:text-red-800">Excluir</button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">01/12/2024</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-xl mr-3">💼</span>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">Salário</div>
-                        <div className="text-sm text-gray-500">Empresa XYZ Ltda</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                      Salário
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Conta Corrente</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-green-600">+R$ 5.500,00</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-800 mr-3">Editar</button>
-                    <button className="text-red-600 hover:text-red-800">Excluir</button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">30/11/2024</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-xl mr-3">🎬</span>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">Cinema Shopping</div>
-                        <div className="text-sm text-gray-500">2 ingressos + pipoca</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                      Lazer
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Cartão de Crédito</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-red-600">-R$ 85,00</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-800 mr-3">Editar</button>
-                    <button className="text-red-600 hover:text-red-800">Excluir</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
-      </main>
-    </div>
+      )}
+    </DashboardLayout>
   );
 }
+

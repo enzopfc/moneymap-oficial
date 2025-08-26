@@ -1,382 +1,298 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { DashboardLayout } from '../../../components/dashboard-layout';
+import { Button } from '../../../components/ui/button';
+import { Card } from '../../../components/ui/card';
+import { Input } from '../../../components/ui/input';
+import { mockAccounts, getTotalBalance } from '../../../lib/mock-data';
 
 export default function AccountsPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-200">
-            <Link href="/" className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">MoneyMapp</span>
-            </Link>
-          </div>
+  const [accounts] = useState(mockAccounts);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-          {/* User Info */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">JD</span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">João Silva</p>
-                <p className="text-xs text-gray-500">joao@email.com</p>
-              </div>
-            </div>
-          </div>
+  const totalBalance = getTotalBalance();
+  const checkingBalance = accounts
+    .filter(acc => acc.type === 'checking')
+    .reduce((sum, acc) => sum + acc.balance, 0);
+  const savingsBalance = accounts
+    .filter(acc => acc.type === 'savings')
+    .reduce((sum, acc) => sum + acc.balance, 0);
+  const creditUsed = accounts
+    .filter(acc => acc.type === 'credit')
+    .reduce((sum, acc) => sum + Math.abs(Math.min(acc.balance, 0)), 0);
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">📊</span>
-              Dashboard
-            </Link>
-            <Link href="/dashboard/transactions" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">💳</span>
-              Transações
-            </Link>
-            <Link href="/dashboard/budget" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">🎯</span>
-              Orçamento
-            </Link>
-            <Link href="/dashboard/reports" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">📈</span>
-              Relatórios
-            </Link>
-            <Link href="/dashboard/goals" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">🏆</span>
-              Metas
-            </Link>
-            <Link href="/dashboard/accounts" className="flex items-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
-              <span className="mr-3">🏪</span>
-              Contas
-            </Link>
-            <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">⚙️</span>
-              Configurações
-            </Link>
-          </nav>
+  const handleAddAccount = () => {
+    setIsModalOpen(true);
+  };
 
-          {/* Bottom Actions */}
-          <div className="px-4 py-4 border-t border-gray-200">
-            <Link href="/" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
-              <span className="mr-3">🏠</span>
-              Página Inicial
-            </Link>
-            <Link href="/" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
-              <span className="mr-3">🚪</span>
-              Sair
-            </Link>
-          </div>
-        </div>
-      </div>
+  const getAccountIcon = (type: string) => {
+    switch (type) {
+      case 'checking': return '🏦';
+      case 'savings': return '🐷';
+      case 'credit': return '💳';
+      case 'investment': return '📈';
+      default: return '💰';
+    }
+  };
 
-      {/* Main Content */}
-      <div className="ml-64">
-        {/* Top Bar */}
-        <div className="bg-white shadow-sm border-b border-gray-200">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Minhas Contas</h1>
-                <p className="text-sm text-gray-600">Gerencie todas as suas contas financeiras</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition shadow-md">
-                  + Adicionar Conta
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+  const getAccountTypeName = (type: string) => {
+    switch (type) {
+      case 'checking': return 'Conta Corrente';
+      case 'savings': return 'Poupança';
+      case 'credit': return 'Cartão de Crédito';
+      case 'investment': return 'Investimento';
+      default: return 'Outro';
+    }
+  };
 
-        <div className="p-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Total em Contas</p>
-                  <p className="text-3xl font-bold text-blue-600">R$ 47.830</p>
-                  <p className="text-xs text-blue-500 mt-1">5 contas ativas</p>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">🏪</span>
-                </div>
-              </div>
-            </div>
+  const getAccountColor = (type: string) => {
+    switch (type) {
+      case 'checking': return 'bg-blue-100 text-blue-600';
+      case 'savings': return 'bg-green-100 text-green-600';
+      case 'credit': return 'bg-red-100 text-red-600';
+      case 'investment': return 'bg-purple-100 text-purple-600';
+      default: return 'bg-gray-100 text-gray-600';
+    }
+  };
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Conta Corrente</p>
-                  <p className="text-3xl font-bold text-green-600">R$ 8.450</p>
-                  <p className="text-xs text-green-500 mt-1">Disponível</p>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">🏦</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Poupança</p>
-                  <p className="text-3xl font-bold text-purple-600">R$ 25.600</p>
-                  <p className="text-xs text-purple-500 mt-1">Rendimento 0,5%</p>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">🐷</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Investimentos</p>
-                  <p className="text-3xl font-bold text-orange-600">R$ 13.780</p>
-                  <p className="text-xs text-orange-500 mt-1">+8.5% este ano</p>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">📈</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Accounts List */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Bank Accounts */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Contas Bancárias</h3>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">BB</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Banco do Brasil</h4>
-                      <p className="text-sm text-gray-600">Conta Corrente • ****-1234</p>
-                      <p className="text-xs text-gray-500">Atualizado há 2 horas</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-green-600">R$ 8.450,00</p>
-                    <div className="flex items-center mt-1">
-                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      <span className="text-xs text-green-600">Ativa</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">BB</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Banco do Brasil</h4>
-                      <p className="text-sm text-gray-600">Poupança • ****-5678</p>
-                      <p className="text-xs text-gray-500">Atualizado há 1 dia</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-purple-600">R$ 25.600,00</p>
-                    <div className="flex items-center mt-1">
-                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      <span className="text-xs text-purple-600">Ativa</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl border border-red-100">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">NU</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Nubank</h4>
-                      <p className="text-sm text-gray-600">Conta Digital • ****-9012</p>
-                      <p className="text-xs text-gray-500">Atualizado há 3 horas</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-green-600">R$ 2.180,00</p>
-                    <div className="flex items-center mt-1">
-                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      <span className="text-xs text-green-600">Ativa</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Credit Cards */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Cartões de Crédito</h3>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border border-gray-200">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">💳</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Nubank Mastercard</h4>
-                      <p className="text-sm text-gray-600">**** **** **** 1234</p>
-                      <p className="text-xs text-gray-500">Fatura vence em 15 dias</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-red-600">R$ 1.250,00</p>
-                    <p className="text-xs text-gray-500">de R$ 8.000 disponível</p>
-                    <div className="w-20 bg-gray-200 rounded-full h-1 mt-1">
-                      <div className="bg-red-500 h-1 rounded-full" style={{ width: '16%' }}></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border border-yellow-200">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">💳</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Banco do Brasil Visa</h4>
-                      <p className="text-sm text-gray-600">**** **** **** 5678</p>
-                      <p className="text-xs text-gray-500">Fatura vence em 8 dias</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-red-600">R$ 850,00</p>
-                    <p className="text-xs text-gray-500">de R$ 5.000 disponível</p>
-                    <div className="w-20 bg-gray-200 rounded-full h-1 mt-1">
-                      <div className="bg-yellow-500 h-1 rounded-full" style={{ width: '17%' }}></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold">💳</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Inter Platinum</h4>
-                      <p className="text-sm text-gray-600">**** **** **** 9012</p>
-                      <p className="text-xs text-gray-500">Sem anuidade</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-green-600">R$ 0,00</p>
-                    <p className="text-xs text-gray-500">de R$ 3.000 disponível</p>
-                    <div className="w-20 bg-gray-200 rounded-full h-1 mt-1">
-                      <div className="bg-green-500 h-1 rounded-full" style={{ width: '0%' }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Investment Accounts */}
-          <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Investimentos</h3>
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver detalhes</button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">📊</span>
-                    </div>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">+12.5%</span>
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Tesouro Direto</h4>
-                  <p className="text-2xl font-bold text-blue-600">R$ 8.500</p>
-                  <p className="text-xs text-gray-500 mt-1">Selic 2029</p>
-                </div>
-
-                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">📈</span>
-                    </div>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">+8.2%</span>
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Fundo DI</h4>
-                  <p className="text-2xl font-bold text-green-600">R$ 3.850</p>
-                  <p className="text-xs text-gray-500 mt-1">CDI + 0,5%</p>
-                </div>
-
-                <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">🏢</span>
-                    </div>
-                    <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">-2.1%</span>
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Ações</h4>
-                  <p className="text-2xl font-bold text-purple-600">R$ 1.430</p>
-                  <p className="text-xs text-gray-500 mt-1">Portfolio diversificado</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Ações Rápidas</h3>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition group">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                    <span className="text-white text-xl">🏪</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 text-center">Adicionar Conta</span>
-                </button>
-
-                <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50 transition group">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                    <span className="text-white text-xl">💳</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 text-center">Adicionar Cartão</span>
-                </button>
-
-                <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition group">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                    <span className="text-white text-xl">🔄</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 text-center">Sincronizar</span>
-                </button>
-
-                <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition group">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                    <span className="text-white text-xl">📊</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 text-center">Investir</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <Button variant="outline" size="sm">
+        📊 Relatório
+      </Button>
+      <Button onClick={handleAddAccount}>
+        + Nova Conta
+      </Button>
     </div>
+  );
+
+  return (
+    <DashboardLayout
+      title="Contas" 
+      description="Gerencie suas contas bancárias e cartões"
+      headerActions={headerActions}
+      showBackButton
+    >
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm">Saldo Total</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(totalBalance)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">💰</div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm">Conta Corrente</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(checkingBalance)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">🏦</div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm">Poupança</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(savingsBalance)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">🐷</div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm">Crédito Usado</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(creditUsed)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">💳</div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Accounts Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {accounts.map((account) => (
+          <Card key={account.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getAccountColor(account.type)}`}>
+                <span className="text-2xl">{getAccountIcon(account.type)}</span>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm" onClick={() => alert('Funcionalidade em desenvolvimento!')}>
+                  ✏️
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => alert('Funcionalidade em desenvolvimento!')}>
+                  🗑️
+                </Button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{account.name}</h3>
+              <p className="text-sm text-gray-500">{account.bank}</p>
+              <p className="text-xs text-gray-400">{getAccountTypeName(account.type)}</p>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-1">Saldo atual</p>
+              <p className={`text-2xl font-bold ${
+                account.balance >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(account.balance)}
+              </p>
+            </div>
+
+            {account.type === 'credit' && (
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-sm text-gray-500">Limite usado</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    {account.creditLimit ? 
+                      `${((Math.abs(Math.min(account.balance, 0)) / account.creditLimit) * 100).toFixed(0)}%` 
+                      : '0%'}
+                  </p>
+                </div>
+                {account.creditLimit && (
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full transition-all"
+                      style={{ 
+                        width: `${Math.min((Math.abs(Math.min(account.balance, 0)) / account.creditLimit) * 100, 100)}%` 
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/dashboard/transactions?account=${account.id}`}>
+                  Ver Transações
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => alert('Funcionalidade em desenvolvimento!')}>
+                Detalhes
+              </Button>
+            </div>
+          </Card>
+        ))}
+
+        {/* Add New Account Card */}
+        <Card className="p-6 border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer">
+          <div 
+            className="flex flex-col items-center justify-center h-full min-h-[300px]"
+            onClick={handleAddAccount}
+          >
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-2xl">+</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Adicionar Nova Conta</h3>
+            <p className="text-sm text-gray-500 text-center">
+              Conecte uma nova conta bancária ou cartão de crédito
+            </p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Add Account Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity">
+              <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setIsModalOpen(false)}></div>
+            </div>
+            
+            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Nova Conta</h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nome da Conta</label>
+                  <Input placeholder="Ex: Conta Corrente Itaú" />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Banco</label>
+                  <Input placeholder="Ex: Itaú, Bradesco, Nubank..." />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Conta</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="checking">Conta Corrente</option>
+                    <option value="savings">Poupança</option>
+                    <option value="credit">Cartão de Crédito</option>
+                    <option value="investment">Investimento</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Saldo Inicial</label>
+                  <Input type="number" placeholder="0,00" />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Limite (opcional)</label>
+                  <Input type="number" placeholder="Para cartões de crédito" />
+                </div>
+                
+                <div className="flex justify-end space-x-3 pt-4">
+                  <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={() => {
+                    setIsModalOpen(false);
+                    alert('Funcionalidade em desenvolvimento!');
+                  }}>
+                    Salvar Conta
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </DashboardLayout>
   );
 }

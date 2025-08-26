@@ -1,415 +1,371 @@
+'use client';
+
+import { DashboardLayout } from '../../components/dashboard-layout';
+import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
+import { 
+  mockUser, 
+  getTotalBalance, 
+  getMonthlyIncome, 
+  getMonthlyExpenses,
+  mockAccounts,
+  mockTransactions,
+  mockGoals,
+  getExpensesByCategory,
+  getGoalProgress,
+  getCategoryById
+} from '../../lib/mock-data';
+import { useState } from 'react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-200">
-            <Link href="/" className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">MoneyMapp</span>
-            </Link>
-          </div>
+  const [isLoading, setIsLoading] = useState(false);
 
-          {/* User Info */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">JD</span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">João Silva</p>
-                <p className="text-xs text-gray-500">joao@email.com</p>
-              </div>
-            </div>
-          </div>
+  // Mock data calculations
+  const totalBalance = getTotalBalance();
+  const monthlyIncome = getMonthlyIncome();
+  const monthlyExpenses = getMonthlyExpenses();
+  const monthlyProfit = monthlyIncome - monthlyExpenses;
+  const expensesByCategory = getExpensesByCategory();
+  
+  // Recent transactions (last 5)
+  const recentTransactions = mockTransactions
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
-            <Link href="/dashboard" className="flex items-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl">
-              <span className="mr-3">📊</span>
-              Dashboard
-            </Link>
-            <Link href="/dashboard/transactions" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">💳</span>
-              Transações
-            </Link>
-            <Link href="/dashboard/budget" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">🎯</span>
-              Orçamento
-            </Link>
-            <Link href="/dashboard/reports" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">📈</span>
-              Relatórios
-            </Link>
-            <Link href="/dashboard/goals" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">🏆</span>
-              Metas
-            </Link>
-            <Link href="/dashboard/accounts" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">🏪</span>
-              Contas
-            </Link>
-            <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition">
-              <span className="mr-3">⚙️</span>
-              Configurações
-            </Link>
-          </nav>
+  // Active goals
+  const activeGoals = mockGoals.filter(goal => !goal.isCompleted).slice(0, 3);
 
-          {/* Bottom Actions */}
-          <div className="px-4 py-4 border-t border-gray-200">
-            <Link href="/" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
-              <span className="mr-3">🏠</span>
-              Página Inicial
-            </Link>
-            <Link href="/" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
-              <span className="mr-3">🚪</span>
-              Sair
-            </Link>
-          </div>
-        </div>
-      </div>
+  const handleAddTransaction = () => {
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      alert('Funcionalidade em desenvolvimento!');
+    }, 1000);
+  };
 
-      {/* Main Content */}
-      <div className="ml-64">
-        {/* Top Bar */}
-        <div className="bg-white shadow-sm border-b border-gray-200">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-sm text-gray-600">Bem-vindo de volta! Aqui está um resumo das suas finanças.</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition shadow-md">
-                  + Nova Transação
-                </button>
-                <div className="relative">
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 transition">
-                    <span className="text-xl">🔔</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6">
-          {/* Financial Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Receitas do Mês</p>
-                  <p className="text-3xl font-bold text-green-600">R$ 8.750</p>
-                  <div className="flex items-center mt-2">
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">+12%</span>
-                    <span className="text-xs text-gray-500 ml-2">vs mês anterior</span>
-                  </div>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">📈</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Despesas do Mês</p>
-                  <p className="text-3xl font-bold text-red-600">R$ 6.420</p>
-                  <div className="flex items-center mt-2">
-                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">+5%</span>
-                    <span className="text-xs text-gray-500 ml-2">vs mês anterior</span>
-                  </div>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">📉</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Saldo Atual</p>
-                  <p className="text-3xl font-bold text-blue-600">R$ 2.330</p>
-                  <div className="flex items-center mt-2">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">+7%</span>
-                    <span className="text-xs text-gray-500 ml-2">crescimento</span>
-                  </div>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">💰</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Taxa de Poupança</p>
-                  <p className="text-3xl font-bold text-purple-600">26.7%</p>
-                  <div className="flex items-center mt-2">
-                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Meta: 30%</span>
-                  </div>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl">🎯</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts and Analysis */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            {/* Spending by Category */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Gastos por Categoria</h3>
-                  <select className="text-sm border border-gray-300 rounded-lg px-3 py-1">
-                    <option>Este mês</option>
-                    <option>Últimos 3 meses</option>
-                    <option>Este ano</option>
-                  </select>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium text-gray-700">🍔 Alimentação</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-400 to-blue-500 h-2 rounded-full" style={{ width: '40%' }}></div>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 min-w-0">R$ 2.480</span>
-                      <span className="text-xs text-gray-500 min-w-0">40%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-green-500 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium text-gray-700">🚗 Transporte</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" style={{ width: '30%' }}></div>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 min-w-0">R$ 1.860</span>
-                      <span className="text-xs text-gray-500 min-w-0">30%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium text-gray-700">🎬 Lazer</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full" style={{ width: '15%' }}></div>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 min-w-0">R$ 930</span>
-                      <span className="text-xs text-gray-500 min-w-0">15%</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-gradient-to-r from-red-400 to-red-500 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium text-gray-700">🏠 Casa</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-red-400 to-red-500 h-2 rounded-full" style={{ width: '15%' }}></div>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 min-w-0">R$ 930</span>
-                      <span className="text-xs text-gray-500 min-w-0">15%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Financial Goals */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Metas Financeiras</h3>
-              </div>
-              <div className="p-6 space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">🏡 Casa Própria</span>
-                    <span className="text-xs text-gray-500">65%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" style={{ width: '65%' }}></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>R$ 65.000</span>
-                    <span>R$ 100.000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">🚗 Carro Novo</span>
-                    <span className="text-xs text-gray-500">45%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style={{ width: '45%' }}></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>R$ 22.500</span>
-                    <span>R$ 50.000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">🏖️ Viagem Europa</span>
-                    <span className="text-xs text-gray-500">80%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style={{ width: '80%' }}></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>R$ 12.000</span>
-                    <span>R$ 15.000</span>
-                  </div>
-                </div>
-
-                <Link href="/dashboard/goals" className="block w-full text-center bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 py-2 rounded-lg hover:from-blue-100 hover:to-indigo-100 transition text-sm font-medium">
-                  Ver Todas as Metas
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity and Quick Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Recent Transactions */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Transações Recentes</h3>
-                  <Link href="/dashboard/transactions" className="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todas</Link>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-white text-sm">🍔</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Restaurante Italiano</p>
-                        <p className="text-xs text-gray-500">Hoje, 12:30 • Cartão de Crédito</p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-red-600">-R$ 89,90</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-white text-sm">💼</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Freelance Design</p>
-                        <p className="text-xs text-gray-500">Ontem, 14:22 • Conta Corrente</p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">+R$ 1.200,00</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-white text-sm">⛽</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Posto Ipiranga</p>
-                        <p className="text-xs text-gray-500">2 dias, 08:15 • Débito</p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-red-600">-R$ 145,50</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-white text-sm">🎬</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Netflix</p>
-                        <p className="text-xs text-gray-500">3 dias, 10:00 • Cartão de Crédito</p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-red-600">-R$ 29,90</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Ações Rápidas</h3>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50 transition group">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                      <span className="text-white text-xl">💰</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 text-center">Adicionar Receita</span>
-                  </button>
-
-                  <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-red-300 hover:bg-red-50 transition group">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                      <span className="text-white text-xl">💸</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 text-center">Adicionar Despesa</span>
-                  </button>
-
-                  <Link href="/dashboard/budget" className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition group">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                      <span className="text-white text-xl">🎯</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 text-center">Definir Orçamento</span>
-                  </Link>
-
-                  <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition group">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
-                      <span className="text-white text-xl">📄</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 text-center">Importar Extrato</span>
-                  </button>
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  <Link href="/dashboard/reports" className="block w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-purple-700 transition shadow-md text-center">
-                    📊 Ver Relatórios Detalhados
-                  </Link>
-                  <Link href="/dashboard/goals" className="block w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white py-3 rounded-xl font-medium hover:from-amber-500 hover:to-orange-600 transition shadow-md text-center">
-                    🎯 Gerenciar Metas
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <Button variant="outline" size="sm">
+        📊 Relatório
+      </Button>
+      <Button onClick={handleAddTransaction} disabled={isLoading}>
+        {isLoading ? '🔄' : '+ Nova Transação'}
+      </Button>
     </div>
+  );
+  return (
+    <DashboardLayout 
+      title="Dashboard" 
+      description={`Bem-vindo de volta, ${mockUser.name}!`}
+      headerActions={headerActions}
+    >
+      {/* Financial Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Balance */}
+        <Card className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm">Saldo Total</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(totalBalance)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">💰</div>
+          </div>
+        </Card>
+
+        {/* Monthly Income */}
+        <Card className="p-6 bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm">Receita Mensal</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(monthlyIncome)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">📈</div>
+          </div>
+        </Card>
+
+        {/* Monthly Expenses */}
+        <Card className="p-6 bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-100 text-sm">Gastos Mensais</p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(monthlyExpenses)}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">📉</div>
+          </div>
+        </Card>
+
+        {/* Monthly Profit */}
+        <Card className={`p-6 text-white border-0 ${
+          monthlyProfit >= 0 
+            ? 'bg-gradient-to-r from-purple-500 to-purple-600' 
+            : 'bg-gradient-to-r from-orange-500 to-orange-600'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className={`text-sm ${monthlyProfit >= 0 ? 'text-purple-100' : 'text-orange-100'}`}>
+                {monthlyProfit >= 0 ? 'Lucro' : 'Déficit'} Mensal
+              </p>
+              <p className="text-2xl font-bold">
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }).format(Math.abs(monthlyProfit))}
+              </p>
+            </div>
+            <div className="text-3xl opacity-80">
+              {monthlyProfit >= 0 ? '🎯' : '⚠️'}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Expenses Chart */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Gastos por Categoria</h3>
+            <Button variant="ghost" size="sm">
+              Ver Detalhes
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {expensesByCategory.map((item) => (
+              <div key={item.label} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-32 bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full transition-all"
+                      style={{ 
+                        width: `${(item.value / expensesByCategory.reduce((sum, cat) => sum + cat.value, 0)) * 100}%`,
+                        backgroundColor: item.color
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900 min-w-0">
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    }).format(item.value)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Accounts Overview */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Contas</h3>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/dashboard/accounts">Gerenciar</Link>
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {mockAccounts.map((account) => (
+              <div key={account.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    account.type === 'checking' ? 'bg-blue-100 text-blue-600' :
+                    account.type === 'savings' ? 'bg-green-100 text-green-600' :
+                    account.type === 'credit' ? 'bg-red-100 text-red-600' :
+                    'bg-purple-100 text-purple-600'
+                  }`}>
+                    {account.type === 'checking' ? '🏦' :
+                     account.type === 'savings' ? '🐷' :
+                     account.type === 'credit' ? '💳' : '📈'}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{account.name}</p>
+                    <p className="text-sm text-gray-500">{account.bank}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`font-semibold ${
+                    account.balance >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL'
+                    }).format(account.balance)}
+                  </p>
+                  <p className="text-sm text-gray-500 capitalize">
+                    {account.type === 'checking' ? 'Corrente' :
+                     account.type === 'savings' ? 'Poupança' :
+                     account.type === 'credit' ? 'Crédito' : 'Investimento'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Transactions */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Transações Recentes</h3>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/dashboard/transactions">Ver Todas</Link>
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            {recentTransactions.map((transaction) => {
+              const category = getCategoryById(transaction.categoryId);
+              const isPositive = transaction.type === 'income';
+              
+              return (
+                <div key={transaction.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">
+                      {category?.icon || '💰'}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{transaction.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(transaction.date).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                      {isPositive ? '+' : ''}
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(transaction.amount)}
+                    </p>
+                    <p className="text-sm text-gray-500">{category?.name}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* Goals Progress */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Metas em Progresso</h3>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/dashboard/goals">Ver Todas</Link>
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            {activeGoals.map((goal) => {
+              const progress = getGoalProgress(goal.id);
+              
+              return (
+                <div key={goal.id} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900">{goal.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL'
+                        }).format(goal.currentAmount)} de{' '}
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL'
+                        }).format(goal.targetAmount)}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                      goal.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      goal.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {progress.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-700"
+                      style={{ width: `${Math.min(progress, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Ações Rápidas</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button 
+              variant="outline" 
+              className="flex flex-col h-auto p-4 space-y-2"
+              onClick={() => alert('Funcionalidade em desenvolvimento!')}
+            >
+              <span className="text-2xl">💰</span>
+              <span className="text-sm">Adicionar Receita</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex flex-col h-auto p-4 space-y-2"
+              onClick={() => alert('Funcionalidade em desenvolvimento!')}
+            >
+              <span className="text-2xl">💸</span>
+              <span className="text-sm">Adicionar Despesa</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex flex-col h-auto p-4 space-y-2"
+              asChild
+            >
+              <Link href="/dashboard/budget">
+                <span className="text-2xl">🎯</span>
+                <span className="text-sm">Definir Orçamento</span>
+              </Link>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex flex-col h-auto p-4 space-y-2"
+              onClick={() => alert('Funcionalidade em desenvolvimento!')}
+            >
+              <span className="text-2xl">📄</span>
+              <span className="text-sm">Importar Extrato</span>
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </DashboardLayout>
   );
 }

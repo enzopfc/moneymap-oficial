@@ -3,7 +3,7 @@ import { cn } from '../lib/utils';
 import { Button } from './button';
 
 export interface FileUploadProps {
-  onFileSelect: (files: FileList | null) => void;
+  onFileSelect: (_files: FileList | null) => void;
   accept?: string;
   multiple?: boolean;
   maxSize?: number; // in MB
@@ -27,7 +27,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     error
   }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false);
-    const [files, setFiles] = React.useState<File[]>([]);
+    const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     const handleDragEnter = (e: React.DragEvent) => {
@@ -91,7 +91,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         validFiles.splice(1); // Keep only first file
       }
 
-      setFiles(validFiles);
+      setSelectedFiles(validFiles);
       
       // Create FileList-like object
       const dt = new DataTransfer();
@@ -101,8 +101,8 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     };
 
     const removeFile = (index: number) => {
-      const newFiles = files.filter((_, i) => i !== index);
-      setFiles(newFiles);
+      const newFiles = selectedFiles.filter((_, i) => i !== index);
+      setSelectedFiles(newFiles);
       
       const dt = new DataTransfer();
       newFiles.forEach(file => dt.items.add(file));
@@ -205,12 +205,12 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           </p>
         )}
 
-        {files.length > 0 && (
+        {selectedFiles.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-medium text-gray-900">
               Arquivos selecionados:
             </p>
-            {files.map((file, index) => (
+            {selectedFiles.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"

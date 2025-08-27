@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '../lib/utils';
+import { Logo } from './Logo';
 
 export interface SidebarProps {
   className?: string;
@@ -55,10 +56,7 @@ export function Sidebar({ className }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center h-16 px-6 border-b border-gray-200">
           <Link href="/" className="flex items-center">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
-              <span className="text-white font-bold text-lg">M</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900">MoneyMapp</span>
+            <Logo size="sm" showText={true} />
           </Link>
         </div>
 

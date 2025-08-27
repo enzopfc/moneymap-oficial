@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'MoneyMapp Team' }],
   creator: 'MoneyMapp',
   publisher: 'MoneyMapp',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/logo.svg',
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -25,6 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+      </head>
       <body className={inter.className}>
         {children}
       </body>

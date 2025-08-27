@@ -1,0 +1,35 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main orange shape - semi-circle with arrow -->
+  <path d="M60 150 C60 95, 105 50, 160 50 L240 50 C240 105, 195 150, 140 150 L60 150 Z" fill="#FFA500"/>
+  
+  <!-- Additional orange layer for depth -->
+  <path d="M70 160 C70 105, 115 60, 170 60 L250 60 C250 115, 205 160, 150 160 L70 160 Z" fill="#FFB84D" opacity="0.8"/>
+  
+  <!-- World globe -->
+  <circle cx="150" cy="150" r="70" fill="#2C3E50"/>
+  <circle cx="150" cy="150" r="68" fill="#34495E"/>
+  
+  <!-- Globe grid lines -->
+  <circle cx="150" cy="150" r="68" fill="none" stroke="#4A5568" stroke-width="1" opacity="0.3"/>
+  <ellipse cx="150" cy="150" rx="68" ry="34" fill="none" stroke="#4A5568" stroke-width="1" opacity="0.3"/>
+  <ellipse cx="150" cy="150" rx="34" ry="68" fill="none" stroke="#4A5568" stroke-width="1" opacity="0.3"/>
+  
+  <!-- World continents -->
+  <path d="M115 125 Q125 115, 140 125 Q155 135, 165 145 Q170 155, 160 165 Q145 170, 130 165 Q115 150, 115 125" fill="white" opacity="0.9"/>
+  <path d="M165 120 Q175 115, 185 125 Q190 135, 185 145 Q175 150, 165 140 L165 120" fill="white" opacity="0.8"/>
+  <path d="M125 170 Q135 165, 150 170 Q165 175, 170 185 Q160 190, 145 185 Q130 180, 125 170" fill="white" opacity="0.7"/>
+  
+  <!-- Dollar sign -->
+  <g stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Vertical line of dollar sign -->
+    <line x1="150" y1="105" x2="150" y2="195"/>
+    <!-- S shape of dollar sign -->
+    <path d="M130 125 L165 125 Q175 125, 175 135 Q175 145, 165 145 L135 145 Q125 145, 125 155 Q125 165, 135 165 L170 165"/>
+  </g>
+  
+  <!-- Navigation arrow -->
+  <path d="M75 95 L100 85 L92 110 Z" fill="#FFA500"/>
+  
+  <!-- Subtle shadow -->
+  <circle cx="152" cy="152" r="70" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="2"/>
+</svg>

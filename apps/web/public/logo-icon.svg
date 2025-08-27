@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="130 60 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <circle cx="250" cy="180" r="120" fill="url(#gradient)" stroke="#1f2937" stroke-width="8"/>
+  
+  <!-- World map pattern inside circle -->
+  <g transform="translate(250,180)">
+    <!-- Continents simplified -->
+    <path d="M-40,-30 Q-35,-40 -20,-35 L-10,-40 Q0,-35 10,-40 L20,-30 Q15,-20 0,-25 L-10,-20 Q-20,-15 -30,-20 Z" fill="#f3f4f6"/>
+    <path d="M-50,10 Q-40,5 -25,10 L-15,5 Q-5,10 5,5 L15,10 Q20,20 10,25 L0,30 Q-15,25 -25,30 L-35,25 Q-45,15 -50,10 Z" fill="#f3f4f6"/>
+    <path d="M20,-10 Q35,-15 45,-5 L50,5 Q45,15 35,10 L25,15 Q15,10 20,-10 Z" fill="#f3f4f6"/>
+  </g>
+  
+  <!-- Dollar sign overlay -->
+  <path d="M240 120 L240 105 M260 120 L260 105 M230 130 Q230 120 240 120 L260 120 Q270 120 270 130 Q270 140 260 140 L250 140 M250 140 Q240 140 240 150 Q240 160 250 160 L260 160 Q270 160 270 170 Q270 180 260 180 L240 180 Q230 180 230 170 M240 185 L240 200 M260 185 L260 200" 
+        stroke="#1f2937" 
+        stroke-width="4" 
+        fill="none" 
+        stroke-linecap="round"/>
+  
+  <!-- Arrow/direction indicator -->
+  <path d="M320 120 L350 150 L320 180 M320 150 L380 150" 
+        stroke="#f59e0b" 
+        stroke-width="6" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.6"/>
+    </linearGradient>
+  </defs>
+</svg>

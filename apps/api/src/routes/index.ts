@@ -36,7 +36,7 @@ async function authRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     // TODO: Implement login logic
     return { success: true, message: 'Login endpoint placeholder' };
   });
@@ -54,7 +54,7 @@ async function authRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     // TODO: Implement register logic
     return { success: true, message: 'Register endpoint placeholder' };
   });
@@ -74,42 +74,42 @@ async function protectedRoutes(fastify: FastifyInstance) {
   // Accounts
   fastify.get('/accounts', {
     schema: { tags: ['accounts'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Accounts endpoint placeholder' };
   });
 
   // Transactions
   fastify.get('/transactions', {
     schema: { tags: ['transactions'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Transactions endpoint placeholder' };
   });
 
   // Categories
   fastify.get('/categories', {
     schema: { tags: ['categories'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Categories endpoint placeholder' };
   });
 
   // Budgets
   fastify.get('/budgets', {
     schema: { tags: ['budgets'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Budgets endpoint placeholder' };
   });
 
   // Goals
   fastify.get('/goals', {
     schema: { tags: ['goals'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Goals endpoint placeholder' };
   });
 
   // Debts
   fastify.get('/debts', {
     schema: { tags: ['debts'] },
-  }, async (request, reply) => {
+  }, async (_request, _reply) => {
     return { success: true, data: [], message: 'Debts endpoint placeholder' };
   });
 }

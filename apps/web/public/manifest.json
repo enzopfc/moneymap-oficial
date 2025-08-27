@@ -1,0 +1,33 @@
+{
+  "name": "MoneyMapp - Gestão Financeira Pessoal",
+  "short_name": "MoneyMapp",
+  "description": "Controle suas finanças de forma inteligente e segura",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["finance", "productivity", "business"],
+  "lang": "pt-BR"
+}

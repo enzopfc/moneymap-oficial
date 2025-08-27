@@ -1,12 +1,11 @@
 import * as React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cn } from '../lib/utils';
-import { Button } from './button';
 
 export interface ModalProps {
   children: React.ReactNode;
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (_open: boolean) => void;
   title?: string;
   description?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -33,9 +32,9 @@ export interface ModalFooterProps {
   className?: string;
 }
 
-const Modal = ({ children, open, onOpenChange }: ModalProps) => {
+const Modal = ({ children, onOpenChange }: ModalProps) => {
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root onOpenChange={onOpenChange}>
       {children}
     </Dialog.Root>
   );

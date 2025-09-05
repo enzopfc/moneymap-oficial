@@ -1,14 +1,23 @@
 {
-  "extends": "@moneymap/config/react-lib.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "ES6"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
     "declaration": true,
     "declarationMap": true,
-    "noEmit": false,
-    "allowImportingTsExtensions": false,
-    "verbatimModuleSyntax": false
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "jsx": "react-jsx"
   },
-  "include": ["src", "stories"],
-  "exclude": ["node_modules", "dist", "storybook-static"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "storybook-static", "stories"]
 }

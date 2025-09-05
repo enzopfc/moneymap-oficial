@@ -10,7 +10,8 @@ export default defineConfig({
       insertTypesEntry: true,
       include: ['src/**/*'],
       exclude: ['node_modules', 'dist', 'storybook-static', 'stories'],
-      copyDtsFiles: true,
+      copyDtsFiles: false,
+      rollupTypes: true,
     }),
   ],
   build: {
@@ -21,7 +22,7 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'tailwindcss'],
+      external: ['react', 'react-dom'],
       output: {
         globals: {
           react: 'React',

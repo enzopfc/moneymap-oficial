@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npx turbo run build --filter=@moneymap/web...",
+  "installCommand": "npm install -g pnpm@9 && pnpm install",
+  "outputDirectory": "apps/web/.next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/web ./packages",
+  "env": {
+    "SKIP_ENV_VALIDATION": "1"
+  }
+}

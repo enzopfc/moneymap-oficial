@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
+      include: ['src/**/*'],
+      exclude: ['node_modules', 'dist', 'storybook-static', 'stories'],
+      copyDtsFiles: true,
     }),
   ],
   build: {
@@ -18,7 +21,7 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'tailwindcss'],
       output: {
         globals: {
           react: 'React',
@@ -27,6 +30,7 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
+    sourcemap: true,
   },
   resolve: {
     alias: {

@@ -283,3 +283,45 @@ enum RulePatternType {
   REGEX
   EQUALS
 }
+
+model User {
+  id        String               @id @default(uuid())
+  name      String
+  email     String               @unique
+  password  String
+  createdAt DateTime             @default(now())
+
+  // 👇 LADO OPOSTO da relação:
+  categorizationRules CategorizationRule[]
+}
+
+model Category {
+  id        String               @id @default(uuid())
+  name      String
+  kind      String               // ou enum, como você definiu
+  color     String?              
+  createdAt DateTime             @default(now())
+
+  // 👇 LADO OPOSTO da relação:
+  categorizationRules CategorizationRule[]
+}
+
+model CategorizationRule {
+  id         String   @id @default(uuid())
+
+  // chaves estrangeiras explícitas (recomendado)
+  userId     String
+  categoryId String
+
+  // relações:
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  // campos da regra (exemplos)
+  pattern    String   // ex.: "mercado|supermercado"
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([categoryId])
+  @@unique([userId, pattern])     // opcional: evita duplicar regra por usuário
+}

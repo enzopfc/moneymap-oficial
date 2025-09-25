@@ -2,6 +2,7 @@ import { fastify } from 'fastify';
 import { config } from './lib/config.js';
 import { setupPlugins } from './plugins/index.js';
 import { setupRoutes } from './routes/index.js';
+import { authService } from './services/authService.js';
 
 const server = fastify({
   logger: config.nodeEnv === 'development' ? {
@@ -28,6 +29,11 @@ async function start() {
     // Setup routes
     await setupRoutes(server);
 
+    // Initialize mock data for development
+    if (config.nodeEnv === 'development') {
+      await authService.createMockUsers();
+    }
+
     // Start server
     await server.listen({
       port: config.port,
@@ -35,6 +41,7 @@ async function start() {
     });
 
     console.log(`Server listening on http://localhost:${config.port}`);
+    console.log(`API Documentation: http://localhost:${config.port}/docs`);
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

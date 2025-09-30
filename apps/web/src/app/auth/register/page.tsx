@@ -3,20 +3,20 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User, UserPlus, Chrome } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { registerSchema, type RegisterFormData } from '../../../lib/validations/auth';
-import { useAuthStore } from '../../../hooks/useAuth';
 import { HomeButton } from '../../../components/Navigation';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-  const { register: registerUser, isLoading } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -34,13 +34,34 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    const result = await registerUser(data.name, data.email, data.password);
-    
-    if (result.success) {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: data.name, email: data.email, password: data.password }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Erro ao registrar');
+
+      // Auto login after register
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/dashboard',
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
       toast.success('Conta criada com sucesso! Bem-vindo ao MoneyMapp!');
-      router.push('/dashboard');
-    } else {
-      toast.error(result.error || 'Erro ao criar conta');
+      router.push(result?.url || '/dashboard');
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao criar conta');
+    } finally {
+      setIsLoading(false);
     }
   };
 

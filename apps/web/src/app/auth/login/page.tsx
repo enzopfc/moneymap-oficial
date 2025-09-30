@@ -2,20 +2,21 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, LogIn, Chrome } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { loginSchema, type LoginFormData } from '../../../lib/validations/auth';
-import { useAuthStore } from '../../../hooks/useAuth';
 import { HomeButton } from '../../../components/Navigation';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -31,14 +32,28 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const result = await login(data.email, data.password);
-    
-    if (result.success) {
-      toast.success('Login realizado com sucesso!');
-      router.push('/dashboard');
-    } else {
-      toast.error(result.error || 'Erro ao fazer login');
+    setIsLoading(true);
+    const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+      callbackUrl,
+    });
+    setIsLoading(false);
+
+    if (!result) {
+      toast.error('Falha no login');
+      return;
     }
+
+    if (result.error) {
+      toast.error(result.error || 'Email ou senha incorretos');
+      return;
+    }
+
+    toast.success('Login realizado com sucesso!');
+    router.push(result.url || callbackUrl);
   };
 
   const isFormLoading = isLoading || isSubmitting;

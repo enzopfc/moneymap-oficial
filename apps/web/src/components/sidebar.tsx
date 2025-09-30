@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { cn } from '../lib/utils';
 import { Logo } from './Logo';
 
@@ -51,6 +52,8 @@ const navigationItems = [
 
 export function Sidebar({ className, isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const user = session?.user;
 
   return (
     <div className={cn(
@@ -70,12 +73,17 @@ export function Sidebar({ className, isOpen = false, onClose }: SidebarProps) {
         {/* User Info */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold">JS</span>
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
+              {user?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.image} alt={user.name || 'User'} className="w-10 h-10 object-cover" />
+              ) : (
+                <span className="text-white font-bold">{user?.name?.slice(0,2).toUpperCase() || 'MM'}</span>
+              )}
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">João Silva</p>
-              <p className="text-xs text-gray-500">joao@email.com</p>
+              <p className="text-sm font-medium text-gray-900">{user?.name || 'Convidado'}</p>
+              <p className="text-xs text-gray-500">{user?.email || '—'}</p>
             </div>
           </div>
         </div>
@@ -113,7 +121,10 @@ export function Sidebar({ className, isOpen = false, onClose }: SidebarProps) {
             <span className="mr-3">🏠</span>
             Página Inicial
           </Link>
-          <button className="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+          <button 
+            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+          >
             <span className="mr-3">🚪</span>
             Sair
           </button>

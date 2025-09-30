@@ -87,6 +87,7 @@ export default function DashboardPage() {
         return 'Gastos por Categoria';
     }
   };
+
   return (
     <DashboardLayout 
       title="Dashboard" 
@@ -94,74 +95,74 @@ export default function DashboardPage() {
       headerActions={headerActions}
     >
       {/* Financial Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* Total Balance */}
-        <Card className="p-4 sm:p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+        <Card className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-xs sm:text-sm">Saldo Total</p>
-              <p className="text-xl sm:text-2xl font-bold">
+              <p className="text-blue-100 text-sm">Saldo Total</p>
+              <p className="text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                 }).format(totalBalance)}
               </p>
             </div>
-            <div className="text-2xl sm:text-3xl opacity-80">💰</div>
+            <div className="text-3xl opacity-80">💰</div>
           </div>
         </Card>
 
         {/* Monthly Income */}
-        <Card className="p-4 sm:p-6 bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+        <Card className="p-6 bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-xs sm:text-sm">Receita Mensal</p>
-              <p className="text-xl sm:text-2xl font-bold">
+              <p className="text-green-100 text-sm">Receita Mensal</p>
+              <p className="text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                 }).format(monthlyIncome)}
               </p>
             </div>
-            <div className="text-2xl sm:text-3xl opacity-80">📈</div>
+            <div className="text-3xl opacity-80">📈</div>
           </div>
         </Card>
 
         {/* Monthly Expenses */}
-        <Card className="p-4 sm:p-6 bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+        <Card className="p-6 bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-red-100 text-xs sm:text-sm">Gastos Mensais</p>
-              <p className="text-xl sm:text-2xl font-bold">
+              <p className="text-red-100 text-sm">Gastos Mensais</p>
+              <p className="text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                 }).format(monthlyExpenses)}
               </p>
             </div>
-            <div className="text-2xl sm:text-3xl opacity-80">📉</div>
+            <div className="text-3xl opacity-80">📉</div>
           </div>
         </Card>
 
         {/* Monthly Profit */}
-        <Card className={`p-4 sm:p-6 text-white border-0 ${
+        <Card className={`p-6 text-white border-0 ${
           monthlyProfit >= 0 
             ? 'bg-gradient-to-r from-purple-500 to-purple-600' 
             : 'bg-gradient-to-r from-orange-500 to-orange-600'
         }`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className={`text-xs sm:text-sm ${monthlyProfit >= 0 ? 'text-purple-100' : 'text-orange-100'}`}>
+              <p className={`text-sm ${monthlyProfit >= 0 ? 'text-purple-100' : 'text-orange-100'}`}>
                 {monthlyProfit >= 0 ? 'Lucro' : 'Déficit'} Mensal
               </p>
-              <p className="text-xl sm:text-2xl font-bold">
+              <p className="text-2xl font-bold">
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                 }).format(Math.abs(monthlyProfit))}
               </p>
             </div>
-            <div className="text-2xl sm:text-3xl opacity-80">
+            <div className="text-3xl opacity-80">
               {monthlyProfit >= 0 ? '🎯' : '⚠️'}
             </div>
           </div>
@@ -169,12 +170,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         {/* Interactive Chart */}
-        <Card className="lg:col-span-2 p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">{getChartTitle()}</h3>
-            <div className="flex gap-2 overflow-x-auto">
+        <Card className="lg:col-span-2 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">{getChartTitle()}</h3>
+            <div className="flex gap-2">
               <Button
                 variant={chartView === 'expenses' ? 'default' : 'ghost'}
                 size="sm"
@@ -199,15 +200,15 @@ export default function DashboardPage() {
             </div>
           </div>
           
-          <div className="h-[300px] sm:h-[350px]">
+          <div className="h-[350px]">
             {renderChart()}
           </div>
         </Card>
 
         {/* Accounts Overview */}
-        <Card className="p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Contas</h3>
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Contas</h3>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard/accounts">Gerenciar</Link>
             </Button>
@@ -215,7 +216,7 @@ export default function DashboardPage() {
           
           <div className="space-y-4">
             {mockAccounts.map((account) => (
-              <div key={account.id} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
+              <div key={account.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                     account.type === 'checking' ? 'bg-blue-100 text-blue-600' :
@@ -253,9 +254,9 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Transactions */}
-        <Card className="p-4 sm:p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Transações Recentes</h3>
             <Button variant="ghost" size="sm" asChild>
@@ -298,7 +299,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Goals Progress */}
-        <Card className="p-4 sm:p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Metas em Progresso</h3>
             <Button variant="ghost" size="sm" asChild>
@@ -348,10 +349,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-6 sm:mt-8">
-        <Card className="p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Ações Rápidas</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="mt-8">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Ações Rápidas</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Button 
               variant="outline" 
               className="flex flex-col h-auto p-4 space-y-2"

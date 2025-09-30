@@ -461,3 +461,24 @@ export const getIncomesByCategory = () => {
     };
   }).filter(item => item.value > 0);
 };
+
+// Mock trend data for charts
+export const getIncomeExpenseTrend = () => {
+  return [
+    { month: '07', income: 8500, expense: 5200, net: 3300 },
+    { month: '08', income: 9200, expense: 5800, net: 3400 },
+    { month: '09', income: 8800, expense: 6100, net: 2700 },
+    { month: '10', income: 9500, expense: 5900, net: 3600 },
+    { month: '11', income: 9800, expense: 6400, net: 3400 },
+    { month: '12', income: 10200, expense: 6800, net: 3400 },
+  ];
+};
+
+export const getGoalChartData = () => {
+  return mockGoals.filter(goal => !goal.isCompleted).map(goal => ({
+    title: goal.title,
+    current: goal.currentAmount,
+    target: goal.targetAmount,
+    progress: (goal.currentAmount / goal.targetAmount) * 100
+  }));
+};

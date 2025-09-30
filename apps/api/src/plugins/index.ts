@@ -7,16 +7,30 @@ import multipart from '@fastify/multipart';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { config } from '../lib/config.js';
+import authPlugin from './auth.js';
 
 export async function setupPlugins(fastify: FastifyInstance) {
   // CORS
   await fastify.register(cors, {
     origin: (origin, callback) => {
-      const hostname = new URL(origin || '').hostname;
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || !origin) {
+      // Allow requests without origin (e.g., mobile apps, curl, Postman)
+      if (!origin) {
         callback(null, true);
         return;
       }
+      
+      try {
+        const hostname = new URL(origin).hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          callback(null, true);
+          return;
+        }
+      } catch (error) {
+        // Invalid URL
+        callback(new Error('Not allowed by CORS'), false);
+        return;
+      }
+      
       callback(new Error('Not allowed by CORS'), false);
     },
   });
@@ -99,4 +113,7 @@ export async function setupPlugins(fastify: FastifyInstance) {
       deepLinking: false,
     },
   });
+
+  // Auth plugin
+  await fastify.register(authPlugin);
 }
